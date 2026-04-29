@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTM Capability Model</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FDFCF9;
+    --surface-hover: #F0EDE6;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.16);
+    --text-primary: #1A1916;
+    --text-secondary: #6B6860;
+    --text-tertiary: #9E9B94;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  header {
+    background: var(--text-primary);
+    color: var(--bg);
+    padding: 48px 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 60px solid rgba(255,255,255,0.04);
+    pointer-events: none;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; left: 200px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 40px solid rgba(255,255,255,0.03);
+    pointer-events: none;
+  }
+  .header-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.1;
+    font-weight: 400;
+    color: #F5F3EE;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .header-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    max-width: 520px;
+    position: relative;
+  }
+  .header-owners {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    margin-top: 28px; position: relative;
+  }
+  .owner-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 5px 12px 5px 6px;
+  }
+  .owner-pill-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600; flex-shrink: 0;
+  }
+  .owner-pill-text { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .owner-pill-name { font-size: 12px; color: rgba(255,255,255,0.95); font-weight: 500; }
+
+  /* Main */
+  main { padding: 32px 48px 64px; }
+
+  /* Canvas */
+  .cap-canvas {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 6px;
+  }
+
+  /* Spanning band (top / bottom) */
+  .cap-band {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .cap-band-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cap-band-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px; font-weight: 400; color: var(--text-primary);
+  }
+  .cap-band-owner { font-size: 11px; color: var(--text-tertiary); font-weight: 300; }
+  .cap-band-count {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-tertiary);
+  }
+  .cap-band-jobs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: var(--border);
+    gap: 1px;
+  }
+
+  /* Pillar row */
+  .cap-pillar-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .cap-pillar {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .cap-pillar-header {
+    padding: 12px 14px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cap-pillar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px; font-weight: 400; color: var(--text-primary);
+    margin-bottom: 3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cap-pillar-owner { font-size: 11px; color: var(--text-tertiary); font-weight: 300; }
+  .cap-pillar-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--text-tertiary);
+    margin-left: auto;
+  }
+  .cap-pillar-meta { display: flex; align-items: center; }
+  .cap-pillar-jobs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--border);
+    gap: 1px;
+  }
+
+  /* Job cell — shared */
+  .cap-job-cell {
+    background: var(--surface);
+    padding: 9px 12px;
+    transition: background 0.1s;
+  }
+  .cap-job-cell:hover { background: var(--surface-hover); }
+  .cap-job-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; color: var(--text-tertiary);
+    display: block; margin-bottom: 2px;
+  }
+  .cap-job-title {
+    font-size: 11px; font-weight: 500;
+    color: var(--text-primary); line-height: 1.35;
+    display: block; margin-bottom: 3px;
+  }
+  .cap-job-sub {
+    font-size: 10px; color: var(--text-tertiary);
+    font-weight: 300; line-height: 1.35; display: block;
+  }
+
+  /* Color accent bar on pillar */
+  .pillar-accent {
+    width: 3px; min-height: 18px;
+    border-radius: 2px; flex-shrink: 0; align-self: stretch;
+  }
+
+  @media (max-width: 1100px) {
+    .cap-band-jobs { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 900px) {
+    main, header { padding-left: 24px; padding-right: 24px; }
+    .cap-pillar-row { grid-template-columns: 1fr 1fr; }
+    .cap-band-jobs { grid-template-columns: repeat(3, 1fr); }
+    .cap-pillar-jobs { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .cap-band-jobs { grid-template-columns: 1fr 1fr; }
+    .cap-pillar-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-label">Go-to-Market · Capability Model</p>
+  <h1>GTM Capability<br><em>Canvas</em></h1>
+  <p class="header-sub">A structured view of all GTM jobs to be done, organized as a capability canvas across motions and functions.</p>
+  <div class="header-owners" id="ownerPills"></div>
+</header>
+
+<main>
+  <div class="cap-canvas" id="canvas"></div>
+</main>
+
+<script>
+const categories = [
+  {
+    id: "marketing", label: "Marketing", owner: "Jess",
+    color: "#534AB7", bg: "#EEEDFE",
+    jobs: [
+      { title: "Build and maintain brand narrative", sub: "Define positioning, voice, and visual identity across all channels" },
+      { title: "Create demand through content", sub: "Blog, thought leadership, video, podcasts, and SEO-driven assets" },
+      { title: "Run integrated campaign programs", sub: "Multi-channel campaigns tied to pipeline goals and segments" },
+      { title: "Own the website and digital presence", sub: "Conversion-optimized web experience, landing pages, and SEO" },
+      { title: "Manage product marketing", sub: "Messaging, launch readiness, competitive positioning, and enablement" },
+      { title: "Execute field and event marketing", sub: "Trade shows, owned events, sponsored activations, and roadshows" },
+      { title: "Drive customer marketing and advocacy", sub: "Case studies, references, reviews, upsell/cross-sell campaigns" },
+      { title: "Develop and nurture email programs", sub: "Lifecycle email, newsletters, re-engagement, and drip sequences" },
+      { title: "Manage analyst and press relations", sub: "Briefings, reports, PR coverage, and thought leadership placement" },
+      { title: "Track marketing attribution and ROI", sub: "Source tracking, multi-touch attribution, and spend efficiency" },
+    ]
+  },
+  {
+    id: "sales", label: "Sales", owner: "Grant",
+    color: "#0F6E56", bg: "#E1F5EE",
+    jobs: [
+      { title: "Prospect and build target account lists", sub: "ICP-aligned outreach lists and account research for reps" },
+      { title: "Run discovery and qualification calls", sub: "Surface pain, validate fit, and score opportunities accurately" },
+      { title: "Execute multi-stakeholder deal cycles", sub: "Navigate buying committees, build champions, and manage enterprise deals" },
+      { title: "Deliver compelling demos and POCs", sub: "Tailored product demonstrations and proof-of-concept engagements" },
+      { title: "Create and present commercial proposals", sub: "Pricing, scoping, and business case development for prospects" },
+      { title: "Negotiate and close contracts", sub: "Handle legal, procurement, and commercial negotiations to close" },
+      { title: "Manage pipeline hygiene and forecasting", sub: "Keep CRM current, stage progression accurate, and commit clean" },
+      { title: "Execute outbound sequences", sub: "Cold outreach via email, phone, LinkedIn, and social selling" },
+      { title: "Conduct competitive displacement", sub: "Respond to incumbent vendors and displace competitors in deals" },
+      { title: "Expand existing accounts", sub: "Identify expansion signals and execute upsell/cross-sell motions" },
+    ]
+  },
+  {
+    id: "revops", label: "Revenue Operations", owner: "Josh",
+    color: "#BA7517", bg: "#FAEEDA",
+    jobs: [
+      { title: "Own the GTM tech stack", sub: "CRM, sales engagement, MAP, BI, and enrichment tools administered" },
+      { title: "Design and enforce revenue processes", sub: "Standardized stages, handoff criteria, and workflow definitions" },
+      { title: "Build and maintain dashboards and reporting", sub: "Pipeline, funnel, conversion, and revenue dashboards for leadership" },
+      { title: "Manage data quality and enrichment", sub: "Contact/account hygiene, deduplication, and enrichment automation" },
+      { title: "Run sales forecasting processes", sub: "Weekly/monthly forecast calls, roll-up logic, and accuracy tracking" },
+      { title: "Design compensation and quota models", sub: "Commission plans, quota-setting frameworks, and SPIFs" },
+      { title: "Enable rep productivity through tooling", sub: "Sequence libraries, templates, battlecards, and automation rules" },
+      { title: "Manage lead routing and assignment", sub: "Territory logic, round-robin, and SLA enforcement for inbound" },
+      { title: "Conduct GTM analytics and insights", sub: "Win/loss analysis, cohort reporting, and funnel diagnostics" },
+      { title: "Support QBR and business review prep", sub: "Data packaging, slides, and commentary for leadership reviews" },
+    ]
+  },
+  {
+    id: "gtmstrategy", label: "GTM Strategy", owner: "Chris",
+    color: "#993556", bg: "#FBEAF0",
+    jobs: [
+      { title: "Define and refine the ICP", sub: "Firmographic, technographic, and behavioral profile of best-fit buyers" },
+      { title: "Develop go-to-market motion design", sub: "Sales-led, product-led, partner-led, or hybrid motion selection" },
+      { title: "Build segment and market coverage plans", sub: "TAM/SAM/SOM analysis and segment prioritization frameworks" },
+      { title: "Set annual GTM and revenue plan", sub: "Headcount, pipeline targets, market expansion, and budget allocation" },
+      { title: "Design pricing and packaging strategy", sub: "Tiering, bundling, usage models, and competitive benchmarking" },
+      { title: "Map and optimize the buyer journey", sub: "Awareness through retention mapped to GTM plays and assets" },
+      { title: "Conduct win/loss and competitive research", sub: "Understand why we win, why we lose, and how to improve" },
+      { title: "Plan new market or vertical entry", sub: "GTM readiness, localization, and sequenced entry strategy" },
+      { title: "Align marketing, sales, and CS goals", sub: "Shared OKRs, service level agreements, and handoff standards" },
+      { title: "Define and iterate on sales plays", sub: "Repeatable playbooks for key segments, use cases, and personas" },
+    ]
+  },
+  {
+    id: "leadgen", label: "Lead Generation", owner: "Patrick",
+    color: "#3C3489", bg: "#EEEDFE",
+    jobs: [
+      { title: "Run paid acquisition programs", sub: "Google, LinkedIn, Meta, and intent-based paid media campaigns" },
+      { title: "Optimize organic and SEO-driven inbound", sub: "Keyword strategy, content production, and technical SEO" },
+      { title: "Execute ABM programs", sub: "1:1, 1:few, and 1:many account-based marketing campaigns" },
+      { title: "Drive inbound conversion optimization", sub: "Landing pages, forms, CTAs, and conversion rate testing" },
+      { title: "Run outbound prospecting programs", sub: "SDR/BDR sequences, cold calling, and intent-triggered outreach" },
+      { title: "Leverage intent and signal data", sub: "G2, Bombora, 6sense, and similar tools to prioritize accounts" },
+      { title: "Build and run referral programs", sub: "Customer, partner, and employee referral incentive structures" },
+      { title: "Create and distribute gated content", sub: "Whitepapers, reports, tools, and webinars that generate leads" },
+      { title: "Manage community and ecosystem presence", sub: "Slack communities, forums, and influencer partnerships" },
+      { title: "Execute webinar and virtual event programs", sub: "Demand-gen webinars, roundtables, and digital summit series" },
+    ]
+  },
+  {
+    id: "partnerships", label: "Partnerships & Alliances", owner: "Kevie",
+    color: "#185FA5", bg: "#E6F1FB",
+    jobs: [
+      { title: "Build and manage a partner program", sub: "Tiers, benefits, rules of engagement, and partner portal" },
+      { title: "Recruit strategic resell and referral partners", sub: "Identify, onboard, and activate channel and resell partners" },
+      { title: "Co-sell and influence revenue with partners", sub: "Joint pipeline, co-sell motions, and partner-sourced deals" },
+      { title: "Develop technology and integration partners", sub: "ISV ecosystem, marketplace listings, and integration GTM" },
+      { title: "Enable and train partner organizations", sub: "Sales enablement, certification, and co-marketing assets" },
+      { title: "Run co-marketing programs with partners", sub: "Joint events, co-branded content, and shared campaigns" },
+      { title: "Manage alliance and OEM relationships", sub: "Strategic alliances, white-label deals, and OEM agreements" },
+      { title: "Track partner contribution and attribution", sub: "Partner-sourced vs. partner-influenced pipeline and revenue" },
+      { title: "Build GSI and consulting firm relationships", sub: "Engage global and regional SIs as delivery and referral partners" },
+      { title: "Develop ecosystem-led growth motions", sub: "Network effects through app marketplaces and data ecosystems" },
+    ]
+  }
+];
+
+function getCat(id) { return categories.find(c => c.id === id); }
+
+function jobCell(job, idx) {
+  return '<div class="cap-job-cell">' +
+    '<span class="cap-job-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
+    '<span class="cap-job-title">' + job.title + '</span>' +
+    '<span class="cap-job-sub">' + job.sub + '</span>' +
+  '</div>';
+}
+
+function spanBand(catId) {
+  const cat = getCat(catId);
+  return '<div class="cap-band">' +
+    '<div class="cap-band-header">' +
+      '<div style="width:3px;min-height:20px;border-radius:2px;background:' + cat.color + ';flex-shrink:0;align-self:stretch;"></div>' +
+      '<span class="cap-band-title">' + cat.label + '</span>' +
+      '<span class="cap-band-owner">— ' + cat.owner + '</span>' +
+      '<span class="cap-band-count">' + cat.jobs.length + ' jobs</span>' +
+    '</div>' +
+    '<div class="cap-band-jobs">' +
+      cat.jobs.map((job, i) => jobCell(job, i)).join('') +
+    '</div>' +
+  '</div>';
+}
+
+function pillar(catId) {
+  const cat = getCat(catId);
+  return '<div class="cap-pillar">' +
+    '<div class="cap-pillar-header">' +
+      '<div class="cap-pillar-title">' +
+        '<div class="pillar-accent" style="background:' + cat.color + '"></div>' +
+        cat.label +
+      '</div>' +
+      '<div class="cap-pillar-meta">' +
+        '<span class="cap-pillar-owner">' + cat.owner + '</span>' +
+        '<span class="cap-pillar-count">' + cat.jobs.length + ' jobs</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="cap-pillar-jobs">' +
+      cat.jobs.map((job, i) => jobCell(job, i)).join('') +
+    '</div>' +
+  '</div>';
+}
+
+// Render canvas
+document.getElementById('canvas').innerHTML =
+  spanBand('gtmstrategy') +
+  '<div class="cap-pillar-row">' +
+    pillar('marketing') +
+    pillar('leadgen') +
+    pillar('partnerships') +
+    pillar('sales') +
+  '</div>' +
+  spanBand('revops');
+
+// Render owner pills in header
+const pillOrder = ['gtmstrategy', 'marketing', 'leadgen', 'partnerships', 'sales', 'revops'];
+document.getElementById('ownerPills').innerHTML = pillOrder.map(id => {
+  const cat = getCat(id);
+  const initials = cat.owner.slice(0,2).toUpperCase();
+  return '<div class="owner-pill">' +
+    '<div class="owner-pill-dot" style="background:' + cat.bg + ';color:' + cat.color + '">' + initials + '</div>' +
+    '<span class="owner-pill-text">' + cat.label + '&nbsp;</span>' +
+    '<span class="owner-pill-name">' + cat.owner + '</span>' +
+  '</div>';
+}).join('');
+</script>
+</body>
+</html>
