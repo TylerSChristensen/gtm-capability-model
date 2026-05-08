@@ -141,7 +141,7 @@
   /* Pillar row */
   .cap-pillar-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
   }
   .cap-pillar {
@@ -174,13 +174,81 @@
     gap: 1px;
   }
 
+  /* NEW: highlight ring for Sales Ops pillar */
+  .cap-pillar.is-new {
+    border-color: rgba(30, 100, 140, 0.35);
+    box-shadow: 0 0 0 3px rgba(30, 100, 140, 0.08);
+  }
+  .new-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: #E6F4FB;
+    color: #1E648C;
+    border: 1px solid rgba(30, 100, 140, 0.2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Owner filter buttons */
+  .owner-filters {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 20px; position: relative;
+  }
+  .owner-filter-btn {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 24px;
+    padding: 5px 14px 5px 7px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    font-family: 'Outfit', sans-serif;
+  }
+  .owner-filter-btn:hover {
+    background: rgba(255,255,255,0.13);
+    border-color: rgba(255,255,255,0.3);
+  }
+  .owner-filter-btn.active {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.5);
+  }
+  .owner-filter-btn.active .ofb-dot { box-shadow: 0 0 0 2px rgba(255,255,255,0.4); }
+  .ofb-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; flex-shrink: 0;
+    transition: box-shadow 0.15s;
+  }
+  .ofb-label { font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 500; }
+  .ofb-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: rgba(255,255,255,0.45);
+    margin-left: 2px;
+  }
+
   /* Job cell — shared */
   .cap-job-cell {
     background: var(--surface);
     padding: 9px 12px;
-    transition: background 0.1s;
+    transition: background 0.15s, opacity 0.2s;
   }
   .cap-job-cell:hover { background: var(--surface-hover); }
+  .cap-job-cell.dimmed {
+    opacity: 0.2;
+  }
+  .cap-job-cell.highlighted {
+    background: var(--highlight-bg, #FFFBE6);
+    box-shadow: inset 3px 0 0 var(--highlight-color, #F0C000);
+  }
+  .cap-job-cell.highlighted:hover {
+    background: var(--highlight-bg, #FFFBE6);
+  }
   .cap-job-num {
     font-family: 'DM Mono', monospace;
     font-size: 9px; color: var(--text-tertiary);
@@ -202,7 +270,49 @@
     border-radius: 2px; flex-shrink: 0; align-self: stretch;
   }
 
-  @media (max-width: 1100px) {
+  /* Overlap annotation */
+  .overlap-note {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .overlap-note-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px; font-weight: 400;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .overlap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .overlap-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .overlap-item-job {
+    font-size: 11px; font-weight: 500;
+    color: var(--text-primary); line-height: 1.35;
+    margin-bottom: 4px;
+  }
+  .overlap-item-note {
+    font-size: 10px; color: var(--text-tertiary); font-weight: 300; line-height: 1.35;
+  }
+  .overlap-tag {
+    display: inline-flex; align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em;
+    border-radius: 3px; padding: 1px 5px; margin-bottom: 4px;
+  }
+
+  @media (max-width: 1200px) {
+    .cap-pillar-row { grid-template-columns: repeat(3, 1fr); }
     .cap-band-jobs { grid-template-columns: repeat(4, 1fr); }
   }
   @media (max-width: 900px) {
@@ -210,10 +320,12 @@
     .cap-pillar-row { grid-template-columns: 1fr 1fr; }
     .cap-band-jobs { grid-template-columns: repeat(3, 1fr); }
     .cap-pillar-jobs { grid-template-columns: 1fr; }
+    .overlap-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 600px) {
     .cap-band-jobs { grid-template-columns: 1fr 1fr; }
     .cap-pillar-row { grid-template-columns: 1fr; }
+    .overlap-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -224,48 +336,50 @@
   <h1>GTM Capability<br><em>Canvas</em></h1>
   <p class="header-sub">A structured view of all GTM jobs to be done, organized as a capability canvas across motions and functions.</p>
   <div class="header-owners" id="ownerPills"></div>
+  <div class="owner-filters" id="ownerFilters"></div>
 </header>
 
 <main>
   <div class="cap-canvas" id="canvas"></div>
+  <div class="overlap-note" id="overlapNote"></div>
 </main>
 
 <script>
 const categories = [
   {
-    id: "marketing", label: "Marketing", owner: "Jess",
+    id: "marketing", label: "Marketing", owner: "",
     color: "#534AB7", bg: "#EEEDFE",
     jobs: [
-      { title: "Build and maintain brand narrative", sub: "Define positioning, voice, and visual identity across all channels" },
-      { title: "Create demand through content", sub: "Blog, thought leadership, video, podcasts, and SEO-driven assets" },
-      { title: "Run integrated campaign programs", sub: "Multi-channel campaigns tied to pipeline goals and segments" },
-      { title: "Own the website and digital presence", sub: "Conversion-optimized web experience, landing pages, and SEO" },
-      { title: "Manage product marketing", sub: "Messaging, launch readiness, competitive positioning, and enablement" },
-      { title: "Execute field and event marketing", sub: "Trade shows, owned events, sponsored activations, and roadshows" },
-      { title: "Drive customer marketing and advocacy", sub: "Case studies, references, reviews, upsell/cross-sell campaigns" },
-      { title: "Develop and nurture email programs", sub: "Lifecycle email, newsletters, re-engagement, and drip sequences" },
-      { title: "Manage analyst and press relations", sub: "Briefings, reports, PR coverage, and thought leadership placement" },
-      { title: "Track marketing attribution and ROI", sub: "Source tracking, multi-touch attribution, and spend efficiency" },
+      { title: "Build and maintain brand narrative", sub: "Define positioning, voice, and visual identity across all channels", owner: "Jess" },
+      { title: "Create demand through content", sub: "Blog, thought leadership, video, podcasts, and SEO-driven assets", owner: "Jess" },
+      { title: "Run integrated campaign programs", sub: "Multi-channel campaigns tied to pipeline goals and segments", owner: "Jess" },
+      { title: "Own the website and digital presence", sub: "Conversion-optimized web experience, landing pages, and SEO", owner: "Jess" },
+      { title: "Manage product marketing", sub: "Messaging, launch readiness, competitive positioning, and enablement", owner: "Jess" },
+      { title: "Execute field and event marketing", sub: "Trade shows, owned events, sponsored activations, and roadshows", owner: "Jess" },
+      { title: "Drive customer marketing and advocacy", sub: "Case studies, references, reviews, upsell/cross-sell campaigns", owner: "Jess" },
+      { title: "Develop and nurture email programs", sub: "Lifecycle email, newsletters, re-engagement, and drip sequences", owner: "Jess" },
+      { title: "Manage analyst and press relations", sub: "Briefings, reports, PR coverage, and thought leadership placement", owner: "Jess" },
+      { title: "Track marketing attribution and ROI", sub: "Source tracking, multi-touch attribution, and spend efficiency", owner: "Jess" },
     ]
   },
   {
-    id: "sales", label: "Sales", owner: "Grant",
+    id: "sales", label: "Sales", owner: "",
     color: "#0F6E56", bg: "#E1F5EE",
     jobs: [
-      { title: "Prospect and build target account lists", sub: "ICP-aligned outreach lists and account research for reps" },
-      { title: "Run discovery and qualification calls", sub: "Surface pain, validate fit, and score opportunities accurately" },
-      { title: "Execute multi-stakeholder deal cycles", sub: "Navigate buying committees, build champions, and manage enterprise deals" },
-      { title: "Deliver compelling demos and POCs", sub: "Tailored product demonstrations and proof-of-concept engagements" },
-      { title: "Create and present commercial proposals", sub: "Pricing, scoping, and business case development for prospects" },
-      { title: "Negotiate and close contracts", sub: "Handle legal, procurement, and commercial negotiations to close" },
-      { title: "Manage pipeline hygiene and forecasting", sub: "Keep CRM current, stage progression accurate, and commit clean" },
-      { title: "Execute outbound sequences", sub: "Cold outreach via email, phone, LinkedIn, and social selling" },
-      { title: "Conduct competitive displacement", sub: "Respond to incumbent vendors and displace competitors in deals" },
-      { title: "Expand existing accounts", sub: "Identify expansion signals and execute upsell/cross-sell motions" },
+      { title: "Prospect and build target account lists", sub: "ICP-aligned outreach lists and account research for reps", owner: "Grant" },
+      { title: "Run discovery and qualification calls", sub: "Surface pain, validate fit, and score opportunities accurately", owner: "Grant" },
+      { title: "Execute multi-stakeholder deal cycles", sub: "Navigate buying committees, build champions, and manage enterprise deals", owner: "Grant" },
+      { title: "Deliver compelling demos and POCs", sub: "Tailored product demonstrations and proof-of-concept engagements", owner: "Grant" },
+      { title: "Create and present commercial proposals", sub: "Pricing, scoping, and business case development for prospects", owner: "Grant" },
+      { title: "Negotiate and close contracts", sub: "Handle legal, procurement, and commercial negotiations to close", owner: "Grant" },
+      { title: "Manage pipeline hygiene and forecasting", sub: "Keep CRM current, stage progression accurate, and commit clean", owner: "Grant" },
+      { title: "Execute outbound sequences", sub: "Cold outreach via email, phone, LinkedIn, and social selling", owner: "Grant" },
+      { title: "Conduct competitive displacement", sub: "Respond to incumbent vendors and displace competitors in deals", owner: "Grant" },
+      { title: "Expand existing accounts", sub: "Identify expansion signals and execute upsell/cross-sell motions", owner: "Grant" },
     ]
   },
   {
-    id: "revops", label: "Revenue Operations", owner: "Josh",
+    id: "revops", label: "Revenue Operations", owner: "",
     color: "#BA7517", bg: "#FAEEDA",
     jobs: [
       { title: "Own the GTM tech stack", sub: "CRM, sales engagement, MAP, BI, and enrichment tools administered" },
@@ -278,42 +392,45 @@ const categories = [
       { title: "Manage lead routing and assignment", sub: "Territory logic, round-robin, and SLA enforcement for inbound" },
       { title: "Conduct GTM analytics and insights", sub: "Win/loss analysis, cohort reporting, and funnel diagnostics" },
       { title: "Support QBR and business review prep", sub: "Data packaging, slides, and commentary for leadership reviews" },
+      { title: "Generate and Send Invoices", sub: "Automate and manage invoice creation, delivery, and reconciliation tied to closed-won deals and renewals", owner: "Tyler" },
+      { title: "Calculate Commissions", sub: "Compute rep and partner commission payouts based on attainment, plan rules, and payment schedules", owner: "Tyler" },
+      { title: "Manage Price Book and SKUs", sub: "Maintain product catalog, pricing tiers, and SKU definitions across systems and sales motions", owner: "Tyler" },
     ]
   },
   {
-    id: "gtmstrategy", label: "GTM Strategy", owner: "Chris",
+    id: "gtmstrategy", label: "GTM Strategy", owner: "",
     color: "#993556", bg: "#FBEAF0",
     jobs: [
-      { title: "Define and refine the ICP", sub: "Firmographic, technographic, and behavioral profile of best-fit buyers" },
-      { title: "Develop go-to-market motion design", sub: "Sales-led, product-led, partner-led, or hybrid motion selection" },
-      { title: "Build segment and market coverage plans", sub: "TAM/SAM/SOM analysis and segment prioritization frameworks" },
-      { title: "Set annual GTM and revenue plan", sub: "Headcount, pipeline targets, market expansion, and budget allocation" },
-      { title: "Design pricing and packaging strategy", sub: "Tiering, bundling, usage models, and competitive benchmarking" },
-      { title: "Map and optimize the buyer journey", sub: "Awareness through retention mapped to GTM plays and assets" },
-      { title: "Conduct win/loss and competitive research", sub: "Understand why we win, why we lose, and how to improve" },
-      { title: "Plan new market or vertical entry", sub: "GTM readiness, localization, and sequenced entry strategy" },
-      { title: "Align marketing, sales, and CS goals", sub: "Shared OKRs, service level agreements, and handoff standards" },
-      { title: "Define and iterate on sales plays", sub: "Repeatable playbooks for key segments, use cases, and personas" },
+      { title: "Define and refine the ICP", sub: "Firmographic, technographic, and behavioral profile of best-fit buyers", owner: "Tyler" },
+      { title: "Develop go-to-market motion design", sub: "Sales-led, product-led, partner-led, or hybrid motion selection", owner: "Tyler" },
+      { title: "Build segment and market coverage plans", sub: "TAM/SAM/SOM analysis and segment prioritization frameworks", owner: "Tyler" },
+      { title: "Set annual GTM and revenue plan", sub: "Headcount, pipeline targets, market expansion, and budget allocation", owner: "Tyler" },
+      { title: "Design pricing and packaging strategy", sub: "Tiering, bundling, usage models, and competitive benchmarking", owner: "Tyler" },
+      { title: "Map and optimize the buyer journey", sub: "Awareness through retention mapped to GTM plays and assets", owner: "Tyler" },
+      { title: "Conduct win/loss and competitive research", sub: "Understand why we win, why we lose, and how to improve", owner: "Tyler" },
+      { title: "Plan new market or vertical entry", sub: "GTM readiness, localization, and sequenced entry strategy", owner: "Tyler" },
+      { title: "Align marketing, sales, and CS goals", sub: "Shared OKRs, service level agreements, and handoff standards", owner: "Tyler" },
+      { title: "Define and iterate on sales plays", sub: "Repeatable playbooks for key segments, use cases, and personas", owner: "Tyler" },
     ]
   },
   {
-    id: "leadgen", label: "Lead Generation", owner: "Patrick",
+    id: "leadgen", label: "Lead Generation", owner: "",
     color: "#3C3489", bg: "#EEEDFE",
     jobs: [
-      { title: "Run paid acquisition programs", sub: "Google, LinkedIn, Meta, and intent-based paid media campaigns" },
-      { title: "Optimize organic and SEO-driven inbound", sub: "Keyword strategy, content production, and technical SEO" },
-      { title: "Execute ABM programs", sub: "1:1, 1:few, and 1:many account-based marketing campaigns" },
-      { title: "Drive inbound conversion optimization", sub: "Landing pages, forms, CTAs, and conversion rate testing" },
-      { title: "Run outbound prospecting programs", sub: "SDR/BDR sequences, cold calling, and intent-triggered outreach" },
-      { title: "Leverage intent and signal data", sub: "G2, Bombora, 6sense, and similar tools to prioritize accounts" },
-      { title: "Build and run referral programs", sub: "Customer, partner, and employee referral incentive structures" },
-      { title: "Create and distribute gated content", sub: "Whitepapers, reports, tools, and webinars that generate leads" },
-      { title: "Manage community and ecosystem presence", sub: "Slack communities, forums, and influencer partnerships" },
-      { title: "Execute webinar and virtual event programs", sub: "Demand-gen webinars, roundtables, and digital summit series" },
+      { title: "Run paid acquisition programs", sub: "Google, LinkedIn, Meta, and intent-based paid media campaigns", owner: "Jess" },
+      { title: "Optimize organic and SEO-driven inbound", sub: "Keyword strategy, content production, and technical SEO", owner: "Jess" },
+      { title: "Execute ABM programs", sub: "1:1, 1:few, and 1:many account-based marketing campaigns", owner: "Jess" },
+      { title: "Drive inbound conversion optimization", sub: "Landing pages, forms, CTAs, and conversion rate testing", owner: "Jess" },
+      { title: "Run outbound prospecting programs", sub: "SDR/BDR sequences, cold calling, and intent-triggered outreach", owner: "Jess" },
+      { title: "Leverage intent and signal data", sub: "G2, Bombora, 6sense, and similar tools to prioritize accounts", owner: "Jess" },
+      { title: "Build and run referral programs", sub: "Customer, partner, and employee referral incentive structures", owner: "Jess" },
+      { title: "Create and distribute gated content", sub: "Whitepapers, reports, tools, and webinars that generate leads", owner: "Jess" },
+      { title: "Manage community and ecosystem presence", sub: "Slack communities, forums, and influencer partnerships", owner: "Jess" },
+      { title: "Execute webinar and virtual event programs", sub: "Demand-gen webinars, roundtables, and digital summit series", owner: "Jess" },
     ]
   },
   {
-    id: "partnerships", label: "Partnerships & Alliances", owner: "Kevie",
+    id: "partnerships", label: "Partnerships & Alliances", owner: "",
     color: "#185FA5", bg: "#E6F1FB",
     jobs: [
       { title: "Build and manage a partner program", sub: "Tiers, benefits, rules of engagement, and partner portal" },
@@ -327,16 +444,80 @@ const categories = [
       { title: "Build GSI and consulting firm relationships", sub: "Engage global and regional SIs as delivery and referral partners" },
       { title: "Develop ecosystem-led growth motions", sub: "Network effects through app marketplaces and data ecosystems" },
     ]
+  },
+  {
+    id: "salesops", label: "Sales Operations", owner: "",
+    color: "#1E648C", bg: "#E6F4FB",
+    isNew: true,
+    jobs: [
+      { title: "Design and maintain territory models", sub: "Geographic, vertical, and named account territory carving and assignment", owner: "Grant" },
+      { title: "Administer quota setting and tracking", sub: "Annual and in-year quota assignment, changes, and attainment monitoring", owner: "Grant" },
+      { title: "Operate the deal desk", sub: "Non-standard pricing approvals, discount governance, and commercial exception handling", owner: "Grant" },
+      { title: "Manage contract and order processing", sub: "Post-signature handoff, order forms, and coordination with finance and legal", owner: "Grant" },
+      { title: "Own sales rep onboarding programs", sub: "Ramp plans, role-specific training tracks, and certification for new hires", owner: "Grant" },
+      { title: "Maintain sales process documentation", sub: "Playbooks, stage definitions, and rules of engagement kept current and enforced", owner: "Grant" },
+      { title: "Track and report on rep performance", sub: "Individual attainment, activity metrics, and productivity benchmarks by role", owner: "Grant" },
+      { title: "Administer SPIFs and incentive programs", sub: "Short-term incentive design, communication, tracking, and payout coordination", owner: "Grant" },
+      { title: "Manage headcount and capacity planning", sub: "Sales hiring plan tied to pipeline targets, ramp assumptions, and segment coverage", owner: "Grant" },
+      { title: "Support sales QBR preparation", sub: "Rep and manager QBR templates, data packages, and review cadence facilitation", owner: "Grant" },
+    ]
   }
+];
+
+const overlaps = [
+  {
+    salesOpsJob: "Administer quota setting and tracking",
+    overlapsWith: "Revenue Operations",
+    overlapColor: "#BA7517",
+    overlapBg: "#FAEEDA",
+    note: "RevOps owns compensation and quota model design; Sales Ops owns the operational execution — assigning numbers, tracking attainment, and processing in-year changes."
+  },
+  {
+    salesOpsJob: "Track and report on rep performance",
+    overlapsWith: "Revenue Operations",
+    overlapColor: "#BA7517",
+    overlapBg: "#FAEEDA",
+    note: "RevOps builds pipeline and funnel dashboards for leadership; Sales Ops owns rep-level performance views and individual productivity reporting."
+  },
+  {
+    salesOpsJob: "Maintain sales process documentation",
+    overlapsWith: "Revenue Operations",
+    overlapColor: "#BA7517",
+    overlapBg: "#FAEEDA",
+    note: "RevOps designs and enforces revenue processes at a system level; Sales Ops maintains the day-to-day documentation reps and managers actually use."
+  },
+  {
+    salesOpsJob: "Administer SPIFs and incentive programs",
+    overlapsWith: "Revenue Operations",
+    overlapColor: "#BA7517",
+    overlapBg: "#FAEEDA",
+    note: "RevOps designs the compensation plan structure; Sales Ops runs the short-term incentive programs operationally, including tracking and payout."
+  },
+  {
+    salesOpsJob: "Support sales QBR preparation",
+    overlapsWith: "Revenue Operations",
+    overlapColor: "#BA7517",
+    overlapBg: "#FAEEDA",
+    note: "RevOps supports leadership-level QBR data packaging; Sales Ops owns the rep and front-line manager QBR process and cadence."
+  },
+  {
+    salesOpsJob: "Operate the deal desk",
+    overlapsWith: "Sales",
+    overlapColor: "#0F6E56",
+    overlapBg: "#E1F5EE",
+    note: "Sales owns commercial negotiation and closing; Sales Ops owns the internal approval layer and governance for non-standard deal structures."
+  },
 ];
 
 function getCat(id) { return categories.find(c => c.id === id); }
 
 function jobCell(job, idx) {
-  return '<div class="cap-job-cell">' +
+  const ownerAttr = job.owner ? ' data-owner="' + job.owner + '"' : '';
+  return '<div class="cap-job-cell"' + ownerAttr + '>' +
     '<span class="cap-job-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
     '<span class="cap-job-title">' + job.title + '</span>' +
     '<span class="cap-job-sub">' + job.sub + '</span>' +
+    (job.owner ? '<span class="cap-job-owner" style="display:block;font-size:10px;color:var(--text-tertiary);font-weight:400;margin-top:4px;font-family:\'DM Mono\',monospace;">&#x25A3; ' + job.owner + '</span>' : '') +
   '</div>';
 }
 
@@ -346,7 +527,7 @@ function spanBand(catId) {
     '<div class="cap-band-header">' +
       '<div style="width:3px;min-height:20px;border-radius:2px;background:' + cat.color + ';flex-shrink:0;align-self:stretch;"></div>' +
       '<span class="cap-band-title">' + cat.label + '</span>' +
-      '<span class="cap-band-owner">— ' + cat.owner + '</span>' +
+      (cat.owner ? '<span class="cap-band-owner">— ' + cat.owner + '</span>' : '') +
       '<span class="cap-band-count">' + cat.jobs.length + ' jobs</span>' +
     '</div>' +
     '<div class="cap-band-jobs">' +
@@ -357,14 +538,16 @@ function spanBand(catId) {
 
 function pillar(catId) {
   const cat = getCat(catId);
-  return '<div class="cap-pillar">' +
+  const newClass = cat.isNew ? ' is-new' : '';
+  const newBadge = cat.isNew ? '<span class="new-badge">New</span>' : '';
+  return '<div class="cap-pillar' + newClass + '">' +
     '<div class="cap-pillar-header">' +
       '<div class="cap-pillar-title">' +
         '<div class="pillar-accent" style="background:' + cat.color + '"></div>' +
-        cat.label +
+        cat.label + newBadge +
       '</div>' +
       '<div class="cap-pillar-meta">' +
-        '<span class="cap-pillar-owner">' + cat.owner + '</span>' +
+        (cat.owner ? '<span class="cap-pillar-owner">' + cat.owner + '</span>' : '') +
         '<span class="cap-pillar-count">' + cat.jobs.length + ' jobs</span>' +
       '</div>' +
     '</div>' +
@@ -374,7 +557,7 @@ function pillar(catId) {
   '</div>';
 }
 
-// Render canvas
+// Render canvas — Sales Ops added to pillar row
 document.getElementById('canvas').innerHTML =
   spanBand('gtmstrategy') +
   '<div class="cap-pillar-row">' +
@@ -382,20 +565,85 @@ document.getElementById('canvas').innerHTML =
     pillar('leadgen') +
     pillar('partnerships') +
     pillar('sales') +
+    pillar('salesops') +
   '</div>' +
   spanBand('revops');
 
 // Render owner pills in header
-const pillOrder = ['gtmstrategy', 'marketing', 'leadgen', 'partnerships', 'sales', 'revops'];
+const pillOrder = ['gtmstrategy', 'marketing', 'leadgen', 'partnerships', 'sales', 'salesops', 'revops'];
 document.getElementById('ownerPills').innerHTML = pillOrder.map(id => {
   const cat = getCat(id);
-  const initials = cat.owner.slice(0,2).toUpperCase();
   return '<div class="owner-pill">' +
-    '<div class="owner-pill-dot" style="background:' + cat.bg + ';color:' + cat.color + '">' + initials + '</div>' +
-    '<span class="owner-pill-text">' + cat.label + '&nbsp;</span>' +
-    '<span class="owner-pill-name">' + cat.owner + '</span>' +
+    '<div class="owner-pill-dot" style="background:' + cat.bg + ';color:' + cat.color + '">' + cat.label.slice(0,2).toUpperCase() + '</div>' +
+    '<span class="owner-pill-name">' + cat.label + '</span>' +
   '</div>';
 }).join('');
+
+// Build owner filter buttons
+const ownerColors = {
+  'Tyler': { bg: '#E8E6FF', color: '#3D35A0' },
+  'Jess':  { bg: '#E1F5EE', color: '#0F6E56' },
+  'Grant': { bg: '#FAEEDA', color: '#BA7517' },
+};
+
+const allJobs = categories.flatMap(c => c.jobs);
+const ownerCounts = {};
+allJobs.forEach(j => { if (j.owner) ownerCounts[j.owner] = (ownerCounts[j.owner] || 0) + 1; });
+
+let activeOwner = null;
+
+function applyFilter(owner) {
+  const cells = document.querySelectorAll('.cap-job-cell');
+  cells.forEach(cell => {
+    cell.classList.remove('highlighted', 'dimmed');
+    if (owner) {
+      if (cell.dataset.owner === owner) {
+        const c = ownerColors[owner] || { bg: '#F5F3EE', color: '#1A1916' };
+        cell.style.setProperty('--highlight-bg', c.bg);
+        cell.style.setProperty('--highlight-color', c.color);
+        cell.classList.add('highlighted');
+      } else {
+        cell.classList.add('dimmed');
+      }
+    }
+  });
+  document.querySelectorAll('.owner-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.owner === owner);
+  });
+}
+
+const knownOwners = Object.keys(ownerCounts);
+document.getElementById('ownerFilters').innerHTML = knownOwners.map(owner => {
+  const c = ownerColors[owner] || { bg: '#EEE', color: '#333' };
+  const initials = owner.slice(0, 2).toUpperCase();
+  return '<button class="owner-filter-btn" data-owner="' + owner + '" onclick="onFilterClick(this)">' +
+    '<div class="ofb-dot" style="background:' + c.bg + ';color:' + c.color + '">' + initials + '</div>' +
+    '<span class="ofb-label">' + owner + '</span>' +
+    '<span class="ofb-count">' + ownerCounts[owner] + '</span>' +
+  '</button>';
+}).join('');
+
+function onFilterClick(btn) {
+  const owner = btn.dataset.owner;
+  activeOwner = activeOwner === owner ? null : owner;
+  applyFilter(activeOwner);
+}
+
+// Render overlap note
+document.getElementById('overlapNote').innerHTML =
+  '<div class="overlap-note-title">' +
+    '<div style="width:3px;min-height:16px;border-radius:2px;background:#1E648C;flex-shrink:0;align-self:stretch;"></div>' +
+    'Boundary notes — Sales Ops vs. existing categories' +
+  '</div>' +
+  '<div class="overlap-grid">' +
+    overlaps.map(o =>
+      '<div class="overlap-item">' +
+        '<div><span class="overlap-tag" style="background:' + o.overlapBg + ';color:' + o.overlapColor + '">' + o.overlapsWith + '</span></div>' +
+        '<div class="overlap-item-job">' + o.salesOpsJob + '</div>' +
+        '<div class="overlap-item-note">' + o.note + '</div>' +
+      '</div>'
+    ).join('') +
+  '</div>';
 </script>
 </body>
 </html>
