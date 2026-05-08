@@ -389,7 +389,6 @@ const categories = [
       { title: "Run sales forecasting processes", sub: "Weekly/monthly forecast calls, roll-up logic, and accuracy tracking" },
       { title: "Design compensation and quota models", sub: "Commission plans, quota-setting frameworks, and SPIFs" },
       { title: "Enable rep productivity through tooling", sub: "Sequence libraries, templates, battlecards, and automation rules" },
-      { title: "Manage lead routing and assignment", sub: "Territory logic, round-robin, and SLA enforcement for inbound" },
       { title: "Conduct GTM analytics and insights", sub: "Win/loss analysis, cohort reporting, and funnel diagnostics" },
       { title: "Support QBR and business review prep", sub: "Data packaging, slides, and commentary for leadership reviews" },
       { title: "Generate and Send Invoices", sub: "Automate and manage invoice creation, delivery, and reconciliation tied to closed-won deals and renewals", owner: "Tyler" },
@@ -460,6 +459,7 @@ const categories = [
       { title: "Administer SPIFs and incentive programs", sub: "Short-term incentive design, communication, tracking, and payout coordination", owner: "Grant" },
       { title: "Manage headcount and capacity planning", sub: "Sales hiring plan tied to pipeline targets, ramp assumptions, and segment coverage", owner: "Grant" },
       { title: "Support sales QBR preparation", sub: "Rep and manager QBR templates, data packages, and review cadence facilitation", owner: "Grant" },
+      { title: "Manage lead routing and assignment", sub: "Territory logic, round-robin, and SLA enforcement for inbound", owner: "Grant" },
     ]
   }
 ];
@@ -597,8 +597,13 @@ function applyFilter(owner) {
   cells.forEach(cell => {
     cell.classList.remove('highlighted', 'dimmed');
     if (owner) {
-      if (cell.dataset.owner === owner) {
-        const c = ownerColors[owner] || { bg: '#F5F3EE', color: '#1A1916' };
+      const isMatch = owner === '__unassigned__'
+        ? !cell.dataset.owner
+        : cell.dataset.owner === owner;
+      if (isMatch) {
+        const c = owner === '__unassigned__'
+          ? { bg: '#F0EDE6', color: '#6B6860' }
+          : (ownerColors[owner] || { bg: '#F5F3EE', color: '#1A1916' });
         cell.style.setProperty('--highlight-bg', c.bg);
         cell.style.setProperty('--highlight-color', c.color);
         cell.classList.add('highlighted');
@@ -612,6 +617,7 @@ function applyFilter(owner) {
   });
 }
 
+const unassignedCount = allJobs.filter(j => !j.owner).length;
 const knownOwners = Object.keys(ownerCounts);
 document.getElementById('ownerFilters').innerHTML = knownOwners.map(owner => {
   const c = ownerColors[owner] || { bg: '#EEE', color: '#333' };
@@ -621,7 +627,12 @@ document.getElementById('ownerFilters').innerHTML = knownOwners.map(owner => {
     '<span class="ofb-label">' + owner + '</span>' +
     '<span class="ofb-count">' + ownerCounts[owner] + '</span>' +
   '</button>';
-}).join('');
+}).join('') +
+'<button class="owner-filter-btn" data-owner="__unassigned__" onclick="onFilterClick(this)">' +
+  '<div class="ofb-dot" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:11px;">—</div>' +
+  '<span class="ofb-label" style="color:rgba(255,255,255,0.6);">Unassigned</span>' +
+  '<span class="ofb-count">' + unassignedCount + '</span>' +
+'</button>';
 
 function onFilterClick(btn) {
   const owner = btn.dataset.owner;
